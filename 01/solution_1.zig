@@ -1,22 +1,24 @@
 const std = @import("std");
-const allocator = std.heap.page_allocator;
 const input_full = @embedFile("input_full.txt");
 const input_example = @embedFile("input_example.txt");
 
 pub fn main() !void {
-    const result = try abs_distance(input_full);
+    const allocator = std.heap.page_allocator;
+    const result = try abs_distance(allocator, input_full);
     std.debug.print("result: {d}\n", .{result});
 }
 
 test "result example" {
-    try std.testing.expect(try abs_distance(input_example) == 11);
+    const allocator = std.testing.allocator;
+    try std.testing.expect(try abs_distance(allocator, input_example) == 11);
 }
 
 test "result full" {
-    try std.testing.expect(try abs_distance(input_full) == 2904518);
+    const allocator = std.testing.allocator;
+    try std.testing.expect(try abs_distance(allocator, input_full) == 2904518);
 }
 
-pub fn abs_distance(input: []const u8) !u64 {
+pub fn abs_distance(allocator: std.mem.Allocator, input: []const u8) !u64 {
     var it = std.mem.tokenizeAny(u8, input, " \n");
     var is_left = true;
     var numbers_left = std.ArrayList(i32).init(allocator);

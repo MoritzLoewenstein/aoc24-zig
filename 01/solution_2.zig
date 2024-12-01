@@ -1,22 +1,24 @@
 const std = @import("std");
-const allocator = std.heap.page_allocator;
 const input_full = @embedFile("input_full.txt");
 const input_example = @embedFile("input_example.txt");
 
 pub fn main() !void {
-    const result = try similarity_score(input_full);
+    const allocator = std.heap.page_allocator;
+    const result = try similarity_score(allocator, input_full);
     std.debug.print("result: {d}\n", .{result});
 }
 
 test "result example" {
-    try std.testing.expect(try similarity_score(input_example) == 31);
+    const allocator = std.testing.allocator;
+    try std.testing.expect(try similarity_score(allocator, input_example) == 31);
 }
 
 test "result full" {
-    try std.testing.expect(try similarity_score(input_full) == 18650129);
+    const allocator = std.testing.allocator;
+    try std.testing.expect(try similarity_score(allocator, input_full) == 18650129);
 }
 
-pub fn similarity_score(input: []const u8) !u128 {
+pub fn similarity_score(allocator: std.mem.Allocator, input: []const u8) !u128 {
     var it = std.mem.tokenizeAny(u8, input, " \n");
     var is_left = true;
     var numbers_left = std.ArrayList(u32).init(allocator);
