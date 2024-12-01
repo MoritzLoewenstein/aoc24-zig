@@ -40,8 +40,7 @@ pub fn abs_distance(allocator: std.mem.Allocator, input: []const u8) !u64 {
 
     var acc: u64 = 0;
     for (0..numbers_left.items.len) |i| {
-        acc = acc + @abs(numbers_right.items[i] - numbers_left.items[i]);
+        acc += @abs(numbers_right.items[i] - numbers_left.items[i]);
     }
-
     return acc;
 }

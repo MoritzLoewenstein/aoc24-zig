@@ -38,19 +38,14 @@ pub fn similarity_score(allocator: std.mem.Allocator, input: []const u8) !u128 {
     var numbers_right_frequency_map = std.AutoHashMap(u32, u8).init(allocator);
     defer numbers_right_frequency_map.deinit();
     for (numbers_right.items) |number| {
-        const count = numbers_right_frequency_map.get(number);
-        const count_new: u8 = if (count == null) 1 else count.? + 1;
-        try numbers_right_frequency_map.put(number, count_new);
+        const count = numbers_right_frequency_map.get(number) orelse 0;
+        try numbers_right_frequency_map.put(number, count + 1);
     }
 
     var similarity_score_cnt: u128 = 0;
     for (numbers_left.items) |number| {
-        const frequency = numbers_right_frequency_map.get(number);
-        if (frequency == null) {
-            continue;
-        }
-
-        similarity_score_cnt = similarity_score_cnt + number * frequency.?;
+        const frequency = numbers_right_frequency_map.get(number) orelse 0;
+        similarity_score_cnt += number * frequency;
     }
     return similarity_score_cnt;
 }
