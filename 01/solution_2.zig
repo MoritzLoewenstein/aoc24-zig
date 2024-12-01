@@ -1,8 +1,22 @@
 const std = @import("std");
 const allocator = std.heap.page_allocator;
-const input = @embedFile("input_full.txt");
+const input_full = @embedFile("input_full.txt");
+const input_example = @embedFile("input_example.txt");
 
 pub fn main() !void {
+    const result = try similarity_score(input_full);
+    std.debug.print("result: {d}\n", .{result});
+}
+
+test "result example" {
+    try std.testing.expect(try similarity_score(input_example) == 31);
+}
+
+test "result full" {
+    try std.testing.expect(try similarity_score(input_full) == 18650129);
+}
+
+pub fn similarity_score(input: []const u8) !u128 {
     var it = std.mem.tokenizeAny(u8, input, " \n");
     var is_left = true;
     var numbers_left = std.ArrayList(u32).init(allocator);
@@ -27,15 +41,14 @@ pub fn main() !void {
         try numbers_right_frequency_map.put(number, count_new);
     }
 
-    var similarity_score: u128 = 0;
+    var similarity_score_cnt: u128 = 0;
     for (numbers_left.items) |number| {
         const frequency = numbers_right_frequency_map.get(number);
         if (frequency == null) {
             continue;
         }
 
-        similarity_score = similarity_score + number * frequency.?;
+        similarity_score_cnt = similarity_score_cnt + number * frequency.?;
     }
-
-    std.debug.print("result: {d}\n", .{similarity_score});
+    return similarity_score_cnt;
 }
