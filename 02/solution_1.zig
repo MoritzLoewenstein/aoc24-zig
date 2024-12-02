@@ -2,8 +2,6 @@ const std = @import("std");
 const input_full = @embedFile("input_full.txt");
 const input_example = @embedFile("input_example.txt");
 
-pub const Error = error{NotSupported};
-
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
     const result = try report_count_safe(allocator, input_full);
@@ -41,7 +39,7 @@ pub fn report_count_safe(allocator: std.mem.Allocator, input: []const u8) !u16 {
 
 pub fn is_report_safe(numbers: []const i16) !bool {
     if (numbers.len < 2) {
-        return error.NotSupported;
+        return true;
     }
     const is_ascending = numbers[0] < numbers[1];
     for (0..numbers.len - 1) |i| {

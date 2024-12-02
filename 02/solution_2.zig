@@ -55,35 +55,41 @@ pub fn is_report_safe(allocator: std.mem.Allocator, number_slice: []const i16, h
     for (0..numbers.items.len - 1) |i| {
         // we already check for equal numbers here, equal numbers violate the second condition
         const consistent_sort = if (is_ascending) numbers.items[i] < numbers.items[i + 1] else numbers.items[i] > numbers.items[i + 1];
-        if (!consistent_sort and has_removed_level) {
+        if (has_removed_level and !consistent_sort) {
             return false;
         }
 
-        const abs_diff = @abs(numbers.items[i] - numbers.items[i + 1]);
-        if (abs_diff > 3 and has_removed_level) {
+        const abs_diff_valid = @abs(numbers.items[i] - numbers.items[i + 1]) <= 3;
+        if (has_removed_level and !abs_diff_valid) {
             return false;
         }
 
-        if (!has_removed_level and (!consistent_sort or abs_diff > 3)) {
-            // check if report is safe without previous, current and next index separately
-            if (i > 0) {
-                const previous_element = numbers.orderedRemove(i - 1);
-                const is_safe_without_previous = try is_report_safe(allocator, numbers.items, true);
-                if (is_safe_without_previous) {
-                    return true;
-                }
-                try numbers.insert(i - 1, previous_element);
-            }
-            const current_element = numbers.orderedRemove(i);
-            const is_safe_left = try is_report_safe(allocator, numbers.items, true);
-            if (is_safe_left) {
+        if (consistent_sort and abs_diff_valid) {
+            continue;
+        }
+
+        // has_removed_level is false here, either already returned or in next loop iteration
+        if (!consistent_sort and i == 1) {
+            // edgecase: 25 24 27 28 30
+            // the order of the first element is "always" correct
+            // check without first element when sort constraint fails at index = 1
+            const previous_element = numbers.orderedRemove(i - 1);
+            const is_safe_without_previous = try is_report_safe(allocator, numbers.items, true);
+            if (is_safe_without_previous) {
                 return true;
             }
-
-            try numbers.insert(i, current_element);
-            _ = numbers.orderedRemove(i + 1);
-            return is_report_safe(allocator, numbers.items, true);
+            try numbers.insert(i - 1, previous_element);
         }
+
+        const current_element = numbers.orderedRemove(i);
+        const is_safe_without_current = try is_report_safe(allocator, numbers.items, true);
+        if (is_safe_without_current) {
+            return true;
+        }
+
+        try numbers.insert(i, current_element);
+        _ = numbers.orderedRemove(i + 1);
+        return is_report_safe(allocator, numbers.items, true);
     }
     return true;
 }
