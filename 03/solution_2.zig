@@ -77,6 +77,7 @@ pub fn calc_corrupted_mul(allocator: std.mem.Allocator, input: []const u8) !u32 
                 }
             },
             State.argument_separator => argument_separator: {
+                // no leading zero
                 if (!std.ascii.isDigit(char) or char == '0') {
                     break :argument_separator State.initial;
                 }
@@ -88,7 +89,6 @@ pub fn calc_corrupted_mul(allocator: std.mem.Allocator, input: []const u8) !u32 
                 if (tmp.items.len > 0 and char == ')') {
                     num_b = try std.fmt.parseInt(u32, tmp.items, 10);
                     mul_acc += num_a * num_b;
-                    //std.debug.print("mul({any},{any})\n", .{ num_a, num_b });
                     break :mul_read_b State.initial;
                 }
 
@@ -104,7 +104,6 @@ pub fn calc_corrupted_mul(allocator: std.mem.Allocator, input: []const u8) !u32 
                 }
             },
         };
-        //std.debug.print("state_transition: {any} -> {any}, char: {any}, tmp: {any}, num_a: {any}, num_b: {any}\n", .{ state_previous, state_current, char, tmp.items, num_a, num_b });
         // reset tmp if necessary
         if (state_current == State.initial and tmp.items.len > 0) {
             tmp.clearAndFree();
