@@ -68,7 +68,9 @@ pub fn is_report_safe(allocator: std.mem.Allocator, number_slice: []const i16, h
             continue;
         }
 
-        // has_removed_level is false here, either already returned or in next loop iteration
+        // has_removed_level is false and current report is invalid
+        // try to remove an element
+
         if (!consistent_sort and i == 1) {
             // edgecase: 25 24 27 28 30
             // the order of the first element is "always" correct
