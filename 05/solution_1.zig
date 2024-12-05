@@ -51,7 +51,6 @@ pub fn valid_print_queue_middle_sum(allocator: std.mem.Allocator, input: []const
     var middle_sum: u32 = 0;
     print_update: for (print_updates.items) |print_update| {
         for (0..print_update.len, print_update) |idx, number| {
-            try tmp_numbers.append(number);
             const dependants = number_to_dependants.get(number);
             if (dependants == null) continue;
             for (dependants.?.items) |dependant| {
@@ -64,7 +63,6 @@ pub fn valid_print_queue_middle_sum(allocator: std.mem.Allocator, input: []const
         }
         const middle_idx = print_update.len / 2;
         middle_sum += print_update[middle_idx];
-        tmp_numbers.clearRetainingCapacity();
     }
 
     var it_number_to_dependants = number_to_dependants.valueIterator();
