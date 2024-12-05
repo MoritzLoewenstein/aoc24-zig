@@ -53,12 +53,10 @@ pub fn valid_print_queue_middle_sum(allocator: std.mem.Allocator, input: []const
         for (0..print_update.len, print_update) |idx, number| {
             const dependants = number_to_dependants.get(number);
             if (dependants == null) continue;
-            for (dependants.?.items) |dependant| {
-                if (std.mem.indexOfScalar(u32, print_update[idx..], dependant) != null) {
-                    // dependant is in print_update but after number
-                    // continue with next print_update
-                    continue :print_update;
-                }
+            if (std.mem.indexOfAny(u32, print_update[idx..], dependants.?.items) != null) {
+                // at least one dependant is in print_update after number
+                // continue with next print_update
+                continue :print_update;
             }
         }
         const middle_idx = print_update.len / 2;
