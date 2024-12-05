@@ -58,3 +58,21 @@ and pass it to the diagonal counting function again
 - the index calculation of the diagonal match was also painful, especially when the input is reversed
 - probably need to visualize the data for the next problems
 - idx calculation in first and second task is bad and felt more like guessing than calculating
+
+## 05
+
+### Task 1
+- i had the idea to use a HashMap where i can look up all numbers that should appear before a specific number (number -> arraylist of numbers)
+- print queues are just an arraylist of slices
+- with these data structures in place, the actual logic was not that hard:
+	1) iterate over all print_queues
+	2) iterate in one print_queue
+	3) check if the dependencies of the current number appear after the current index (if yes -> current print queue is invalid)
+- i managed to eliminate the dependants loop by using indexOfAny instead of iterating and using indexOfScalar when checking the dependants
+- had to free the Slices in the ArrayList and the ArrayLists in the HashMap at the end of the function, slowly getting the hang of it
+
+### Task 2
+- saved indices of invalid print queues in an ArrayList
+- wrote a sort compare function which takes the number_to_dependants HashMap as context
+- iterate over invalid print queues, sort them with my compare function, add middle element to result
+- all in all this felt like a very clean solution, i think my choice of data structures helped a lot
