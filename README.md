@@ -39,3 +39,22 @@ this resulted in a segfault when accessing the return value in the caller.
 - instead i needed to return `arr_list.toOwnedSlice()` and call `defer allocator.free(slice)` in the caller.
 - logic wise `remove_disabled_instructions` was relatively easy, for calculating the multiplications i just
 passed the result of this function into the parser created in the first task
+
+## 04
+
+### Task 1
+- honestly took me a while to find the correct functions for the simple case (std.mem.count)
+- reversing the word was also unexpectedly hard, did not find a way to copy and reverse in one step
+- while counting the vertical occurences i noticed that the input is always square (same amount of rows and columns)
+- diagonal counting was a bit tricky, after some trial and error i got it working
+- to avoid the pain of writing more diagonal counting logic, i had the idea the reverse the order of the lines in the input
+and pass it to the diagonal counting function again
+- diagonal logic is skipping rows / columns if the diagonal is too short to contain the word, proud of that one
+
+### Task 2
+- had the idea to collect all middle indices of matches in a list, then check for duplicates, each duplicate is a valid match
+- basically had to replace all std.mem.count calls with std.mem.indexOfPos loop
+- somehow didnt realize that i only needed to do this for diagonal search and wasted some time
+- the index calculation of the diagonal match was also painful, especially when the input is reversed
+- probably need to visualize the data for the next problems
+- idx calculation in first and second task is bad and felt more like guessing than calculating

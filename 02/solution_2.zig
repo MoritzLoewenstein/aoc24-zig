@@ -21,7 +21,6 @@ test "result edgecases" {
 
 test "result full" {
     const allocator = std.testing.allocator;
-    // 452 is too low
     try std.testing.expect(try report_count_safe(allocator, input_full) == 455);
 }
 
