@@ -119,18 +119,18 @@ pub fn remove_disabled_instructions(allocator: std.mem.Allocator, input: []const
     try input_arr.appendSlice(input);
     var dont_index = std.mem.indexOf(u8, input_arr.items, "don't()");
     if (dont_index == null) return input;
-    while(dont_index != null) {
+    while (dont_index != null) {
         var dont_index_val = dont_index.?;
         var do_index = std.mem.indexOf(u8, input_arr.items, "do()");
         // remove do() if index smaller then dont()
-        while(do_index != null and do_index.? < dont_index_val) {
+        while (do_index != null and do_index.? < dont_index_val) {
             try input_arr.replaceRange(do_index.?, 4, &.{});
             do_index = std.mem.indexOf(u8, input_arr.items, "do()");
             // dont_index decreased by the length of do()
             dont_index_val -= 4;
         }
 
-        if(do_index == null) {
+        if (do_index == null) {
             // there is no do() after don't(), remove everything after don't()
             try input_arr.replaceRange(dont_index_val, input_arr.items.len - dont_index_val, &.{});
             return input_arr.toOwnedSlice();
