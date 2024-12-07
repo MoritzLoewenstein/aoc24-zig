@@ -76,3 +76,19 @@ and pass it to the diagonal counting function again
 - wrote a sort compare function which takes the number_to_dependants HashMap as context
 - iterate over invalid print queues, sort them with my compare function, add middle element to result
 - all in all this felt like a very clean solution, i think my choice of data structures helped a lot
+
+## 06
+
+### Task 1
+- pretty straightforward, used enums and structs to keep the state
+- struct with functions for the guard actions (next, previous, turn) which change the passed in variables (pointers)
+- extensively used switch expressions for handling the different directions, this is amazing
+
+### Task 2
+- improved the struct usage of Task 1, the guard struct now has all state and methods dont need any arguments anymore (next, previous, turn)
+- solution was very brute forcy, but i could not think of a better way
+- created a list of every possible additional obstacle position (no obstacle placed and not the starting point of the guard)
+- the core algorithm now has a turn log which keeps all turn entries (row, col, direction)
+- we check the turn log for every new turn, if the current turn is already in the log, we found a loop
+- managed to optimize by only trying the additional obstacle positions which are in the path of the guard,
+because other obstacles will not change the outcome (2s -> 0.5s runtime)
