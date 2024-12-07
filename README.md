@@ -90,5 +90,25 @@ and pass it to the diagonal counting function again
 - created a list of every possible additional obstacle position (no obstacle placed and not the starting point of the guard)
 - the core algorithm now has a turn log which keeps all turn entries (row, col, direction)
 - we check the turn log for every new turn, if the current turn is already in the log, we found a loop
-- managed to optimize by only trying the additional obstacle positions which are in the path of the guard,
+- managed to optimize by only trying the additional obstacle positions which are in the initial path of the guard,
 because other obstacles will not change the outcome (2s -> 0.5s runtime)
+
+## 07
+
+### Task 1
+- most difficult for me was the operand permutation function with the associated memory management of arraylists and slices
+- basic data structures: calculations as HashMap of result to slice of values
+- precalculate all needed permutations  into a HashMap of the permutation_len to slices of slices of Operands (u64 -> []const []const Operand)
+- for each calculation, loop over permutations, early exit of result is higher than expected, exit after permutation calc if result is equal to expected
+
+### Task 2
+- added Operand.Concat enum value
+- permutation function now iterates over possible enum values
+- we concat the numbers by: a * pow(10, digits_of(b)) + b,
+e.g. a = 10, b = 20 => 10 * (10^2) + 20 => 1000 + 20 = 1020
+- i hope my math on concat is faster then converting to string and back
+- runtime is now quite slow: 4.5s, but i am happy with the solution (first part was less than 100ms)
+- could probably filter permutations before calculation depending on the numbers and result,
+most permutations with a lot of concats are invalid because they get big very fast
+- in hindsight realized that my hashmap of results to values would not work if a there are multiple entries for one result,
+this case was not covered in the provided data
