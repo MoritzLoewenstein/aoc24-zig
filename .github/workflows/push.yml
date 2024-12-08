@@ -1,0 +1,13 @@
+on:
+    push:
+        branches:
+            - main
+jobs:
+    fmt_test:
+        runs-on: ubuntu-latest
+        name: Build and Test
+        steps:
+            - uses: actions/checkout@v3
+            - uses: mlugg/setup-zig@v1
+            - run: zig fmt --check .
+            - run: zig build test
