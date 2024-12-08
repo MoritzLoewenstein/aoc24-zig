@@ -112,3 +112,19 @@ e.g. a = 10, b = 20 => 10 * (10^2) + 20 => 1000 + 20 = 1020
 most permutations with a lot of concats are invalid because they get big very fast
 - in hindsight realized that my hashmap of results to values would not work if a there are multiple entries for one result,
 this case was not covered in the provided data
+
+## 08
+
+### Task 1
+- while parsing the data created a hashmap of antenna char to antenna position list (in input string)
+- antinode positions are saved in std.AutoHashMap(u64, void) because we only need to know if a position is an antinode
+- the core logic iterates over each antenna type, in each antenna type iterate over every position combination
+- realization: position of antinodes in the input string are just addition (antenna b) or substraction (antenna a) of the delta of the antenna positions
+- still need to check for valid antinode positions, could be out of bounds (index exists, but not in the grid) -> used column difference of antenna positions
+- definitely went smoother than the last grid based tasks
+
+### Task 2
+- had to use a while loop for the antinode calculations, as long as either a next antinode or a previous antinode exist
+- then calculate the antinode position and validate it (depending on current iteration of while loop)
+- also add every antenna position to the antinode positions hashmap, we skip iterations for less than one antenna anyway
+- overall very happy, performance is also good (both tasks ~20ms each)
