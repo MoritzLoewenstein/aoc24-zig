@@ -60,6 +60,7 @@ pub fn defragment_filesystem_checksum(allocator: std.mem.Allocator, input: []con
             const file_reverse_idx = reverse_idx - tmp_idx;
             const file_mv = file_list.items[file_reverse_idx];
             if (file_mv.len > empty_space) {
+                // move partial file in empty space
                 for (0..empty_space) |file_len_idx| {
                     _ = file_len_idx;
                     fs_checksum += fs_idx * file_mv.id;
@@ -70,7 +71,7 @@ pub fn defragment_filesystem_checksum(allocator: std.mem.Allocator, input: []con
                 continue :file_loop;
             }
 
-            // can move whole file into empty space
+            // move whole file into empty space
             for (0..file_mv.len) |file_len_idx| {
                 _ = file_len_idx;
                 fs_checksum += fs_idx * file_mv.id;
