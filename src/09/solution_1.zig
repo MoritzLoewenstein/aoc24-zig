@@ -49,8 +49,7 @@ pub fn defragment_filesystem_checksum(allocator: std.mem.Allocator, input: []con
     var moved_files: u64 = 0;
     file_loop: for (file_list.items, 0..) |file, file_idx| {
         const reverse_idx: u64 = file_list.items.len - moved_files - 1;
-        for (0..file.len) |file_len_idx| {
-            _ = file_len_idx;
+        for (0..file.len) |_| {
             fs_checksum += fs_idx * file.id;
             fs_idx += 1;
         }
@@ -72,8 +71,7 @@ pub fn defragment_filesystem_checksum(allocator: std.mem.Allocator, input: []con
             }
 
             // move whole file into empty space
-            for (0..file_mv.len) |file_len_idx| {
-                _ = file_len_idx;
+            for (0..file_mv.len) |_| {
                 fs_checksum += fs_idx * file_mv.id;
                 fs_idx += 1;
             }
