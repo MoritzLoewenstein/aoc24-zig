@@ -4,26 +4,25 @@ const input_example = @embedFile("input_example.txt");
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
-    const result = try defragment_filesystem_checksum(allocator, input_example);
+    const result = try defragment_filesystem_block_checksum(allocator, input_full);
     std.debug.print("result: {d}\n", .{result});
 }
 
 test "result example" {
     const allocator = std.testing.allocator;
-    try std.testing.expect(try defragment_filesystem_checksum(allocator, input_example) == 2858);
+    try std.testing.expect(try defragment_filesystem_block_checksum(allocator, input_example) == 2858);
 }
 
 test "result full" {
     const allocator = std.testing.allocator;
-    // 7912924340274 too high
-    try std.testing.expect(try defragment_filesystem_checksum(allocator, input_full) == 7912924340274);
+    try std.testing.expect(try defragment_filesystem_block_checksum(allocator, input_full) == 6360363199987);
 }
 
 const File = struct { id: u64, len: u64, idx: u64, checksum: u64 };
 const Empty = struct { len: u64, idx: u64 };
 const Field = enum { file, empty };
 const TaggedField = union(Field) { file: File, empty: Empty };
-pub fn defragment_filesystem_checksum(allocator: std.mem.Allocator, input: []const u8) !u64 {
+pub fn defragment_filesystem_block_checksum(allocator: std.mem.Allocator, input: []const u8) !u64 {
     const line_end_idx = std.mem.indexOfScalar(u8, input, '\n') orelse 0;
     if (line_end_idx == 0) return 0;
     var list = std.ArrayList(TaggedField).init(allocator);
@@ -71,6 +70,7 @@ pub fn defragment_filesystem_checksum(allocator: std.mem.Allocator, input: []con
 
         list.items[empty_idx].empty.idx += file.len;
         list.items[empty_idx].empty.len -= file.len;
+        empty_idx = 1;
         file_idx -= 2;
     }
 
@@ -83,9 +83,7 @@ pub fn defragment_filesystem_checksum(allocator: std.mem.Allocator, input: []con
             else => {},
         }
     }
-
-    try print_tagged_fields(allocator, list.items);
-
+    //try print_tagged_fields(allocator, list.items);
     return fs_checksum;
 }
 
@@ -100,7 +98,6 @@ pub fn file_get_checksum(id: u64, len: u64, idx: u64) u64 {
 pub fn print_tagged_fields(allocator: std.mem.Allocator, list: []const TaggedField) !void {
     var files = std.ArrayList(File).init(allocator);
     defer files.deinit();
-
     for (list) |item| {
         switch (item) {
             .file => |*file| {
@@ -109,7 +106,6 @@ pub fn print_tagged_fields(allocator: std.mem.Allocator, list: []const TaggedFie
             else => {},
         }
     }
-
     std.mem.sort(File, files.items, {}, file_compare_idx_asc);
 
     var prev_end_idx: u64 = 0;
@@ -120,7 +116,7 @@ pub fn print_tagged_fields(allocator: std.mem.Allocator, list: []const TaggedFie
         for (file.idx..file.idx + file.len) |idx| {
             std.debug.print("{any} -> {any}\n", .{ idx, file.id });
         }
-        prev_end_idx += file.len;
+        prev_end_idx = file.idx + file.len;
     }
 }
 
