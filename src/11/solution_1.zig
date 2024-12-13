@@ -20,6 +20,7 @@ test "result full" {
 
 pub fn stone_count_after_blinks(allocator: std.mem.Allocator, input: []const u8, blinks: u64) !u64 {
     var stone_list = std.ArrayList(u64).init(allocator);
+    try stone_list.ensureTotalCapacity(200_000);
     defer stone_list.deinit();
     var it = std.mem.tokenizeAny(u8, input, " \n");
     while (it.next()) |token| {
@@ -38,7 +39,7 @@ pub fn stone_count_after_blinks(allocator: std.mem.Allocator, input: []const u8,
                 continue;
             }
 
-            const stone_number_digits = digits_of_number_table(stone_number);
+            const stone_number_digits = digits_of_number(stone_number);
             if (stone_number_digits % 2 == 0) {
                 const stone_left = stone_number / std.math.pow(u64, 10, stone_number_digits / 2);
                 const stone_right = stone_number - (stone_left * std.math.pow(u64, 10, stone_number_digits / 2));
@@ -55,27 +56,9 @@ pub fn stone_count_after_blinks(allocator: std.mem.Allocator, input: []const u8,
     return stone_list.items.len;
 }
 
-pub fn digits_of_number(number: u64) u32 {
+pub fn digits_of_number(number: u64) u8 {
     if (number == 0) return 1;
     const number_float: f64 = @floatFromInt(number);
     const result = @floor(@log10(number_float)) + 1;
     return @intFromFloat(result);
-}
-
-pub fn digits_of_number_table(number: u64) u64 {
-    return switch (number) {
-        0...9 => 1,
-        10...99 => 2,
-        100...999 => 3,
-        1_000...9_999 => 4,
-        10_000...99_999 => 5,
-        100_000...999_999 => 6,
-        1_000_000...9_999_999 => 7,
-        10_000_000...99_999_999 => 8,
-        100_000_000...999_999_999 => 9,
-        1_000_000_000...9_999_999_999 => 10,
-        10_000_000_000...99_999_999_999 => 11,
-        100_000_000_000...999_999_999_999 => 12,
-        else => unreachable,
-    };
 }

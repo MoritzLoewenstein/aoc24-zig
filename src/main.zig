@@ -19,6 +19,7 @@ pub const solution_09_1 = @import("09/solution_1.zig");
 pub const solution_09_2 = @import("09/solution_2.zig");
 pub const solution_10_1 = @import("10/solution_1.zig");
 pub const solution_10_2 = @import("10/solution_2.zig");
+pub const solution_11_1 = @import("11/solution_1.zig");
 
 test {
     std.testing.refAllDecls(@This());
