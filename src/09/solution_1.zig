@@ -19,7 +19,6 @@ test "result full" {
 }
 
 const File = struct { id: u64, len: u64 };
-
 pub fn defragment_filesystem_checksum(allocator: std.mem.Allocator, input: []const u8) !u64 {
     const line_end_idx = std.mem.indexOfScalar(u8, input, '\n') orelse 0;
     if (line_end_idx == 0) return 0;

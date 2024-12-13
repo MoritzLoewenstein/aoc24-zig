@@ -128,3 +128,32 @@ this case was not covered in the provided data
 - then calculate the antinode position and validate it (depending on current iteration of while loop)
 - also add every antenna position to the antinode positions hashmap, we skip iterations for less than one antenna anyway
 - overall very happy, performance is also good (both tasks ~20ms each)
+
+## 09
+
+### Task 1
+- this part was not that easy, but i managed to do it with a loop which:
+	- calculates checksum for file
+	- fills next empty space with (potentially partial) file(s) (starting at the end of the file list)
+	- exit condition is when reverse index and index on file list are equal
+
+
+### Task 2
+- struggled a little bit, chose to do it with a tagged union list which was either file or empty
+- was not that happy with the performance in the end, so optimized it:
+	- tagged union -> File and Empty arraylists
+	- only calculate checksum once, when we positioned the block
+	- use arithmetic progression formula to calculate sum of range (checksum)
+
+## 10
+
+### Task 1
+
+- quickly reached for recursive function which calculates the next position of the trailhead
+- didnt understand why my results were wrong, turns out we need to deduplicate ending positions
+- used AutoHashMap pointer and just added the count for each trailhead to the result
+
+### Task 2
+
+- basically did this when starting with the first task, just had to use the code i had before
+- this went very smooth
