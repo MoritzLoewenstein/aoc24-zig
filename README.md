@@ -157,3 +157,13 @@ this case was not covered in the provided data
 
 - basically did this when starting with the first task, just had to use the code i had before
 - this went very smooth
+
+## 11
+
+### Task 1
+
+- one shotted this, but solution is not that fast (~1.2s)
+
+### Task 2
+
+- ...probably have to do this in a smarter way or it will never complete
