@@ -167,3 +167,11 @@ this case was not covered in the provided data
 ### Task 2
 
 - ...probably have to do this in a smarter way or it will never complete
+- at first i tried to optimize the blinking , e.g. skipping blinks
+	- if digits of number are 2^n, there is way to split multiple times in one step, but this is only applicable if one part is not zero
+	- in the end, this was way too complicated
+- after optimizing failed, i tried to cache the results of each blinking step, which was not possible with the structure i used before
+- in the end i managed to cache the results in a HashMap of struct{ number, blinks } to result (number of stones), HashMap needed a custom context with hash and eql functions
+- blinking function is now called recursively for each blinking step, if the result is already in the cache, return it
+- this was way faster than expected (15ms), very happy with this solution
+- just used one solution.zig file for both tasks & tests, the unoptimized version of task 1 is still in the git history
