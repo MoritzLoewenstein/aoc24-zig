@@ -76,8 +76,9 @@ pub fn blink_number_rec(allocator: std.mem.Allocator, number: u64, blinks: u64, 
         return result;
     }
 
-    const stone_left = number / std.math.pow(u64, 10, stone_number_digits / 2);
-    const stone_right = number - (stone_left * std.math.pow(u64, 10, stone_number_digits / 2));
+    const number_split = std.math.pow(u64, 10, stone_number_digits / 2);
+    const stone_left = number / number_split;
+    const stone_right = number - (stone_left * number_split);
     var result: u64 = 0;
     result += try blink_number_rec(allocator, stone_left, blinks - 1, stone_cache);
     result += try blink_number_rec(allocator, stone_right, blinks - 1, stone_cache);
