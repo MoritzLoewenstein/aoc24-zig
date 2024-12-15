@@ -50,38 +50,38 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
             row_idx += 1;
             continue;
         }
-        const idx_col = idx % (col_max + 1);
+        const col_idx = idx % (col_max + 1);
         var area_top = false;
         var area_left = false;
         var perimeter_score: u3 = 0;
-        if (idx >= row_max + 1) {
+        if (row_idx > 0) {
             const top_idx = idx - row_max - 1;
             area_top = input[top_idx] == char;
             if (!area_top) {
                 perimeter_score += 1;
             }
         }
-        if (idx_col > 0) {
+        if (col_idx > 0) {
             const left_idx = idx - 1;
             area_left = input[left_idx] == char;
             if (!area_left) {
                 perimeter_score += 1;
             }
         }
-        if (idx_col + 1 < col_max) {
+        if (col_idx + 1 < col_max) {
             const right_idx = idx + 1;
             if (input[right_idx] != char) {
                 perimeter_score += 1;
             }
         }
-        if (idx + col_max + 1 < input.len) {
+        if (row_idx + 1 < row_max) {
             const bottom_idx = idx + col_max + 1;
             if (input[bottom_idx] != char) {
                 perimeter_score += 1;
             }
         }
 
-        if (idx_col == 0 or idx_col == col_max - 1) {
+        if (col_idx == 0 or col_idx == col_max - 1) {
             perimeter_score += 1;
         }
         if (row_idx == 0 or row_idx == row_max - 1) {
