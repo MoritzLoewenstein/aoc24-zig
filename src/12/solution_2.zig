@@ -6,7 +6,7 @@ const input_full = @embedFile("input_full.txt");
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
-    const result = try garden_fence_cost(allocator, input_full);
+    const result = try garden_fence_cost(allocator, input_example_1);
     std.debug.print("result: {d}\n", .{result});
 }
 
@@ -30,7 +30,8 @@ test "result full" {
     try std.testing.expect(try garden_fence_cost(allocator, input_full) == 1488414);
 }
 
-const Area = struct { char: u8, perimeter: u64, area: u64, plots: std.ArrayList(u64) };
+const Plot = struct { idx: u64, sides: u3 };
+const Area = struct { char: u8, perimeter: u64, area: u64, plots: std.ArrayList(Plot) };
 pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
     const col_max: u64 = std.mem.indexOfScalar(u8, input, '\n') orelse 0;
     const row_max: u64 = std.mem.count(u8, input, "\n");
@@ -38,6 +39,8 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
     if (col_max == 0 or row_max == 0) {
         return 0;
     }
+
+    //std.debug.print("rows {any} cols {any}\n", .{ row_max, col_max });
 
     var idx_to_area_idx = std.AutoHashMap(u64, u64).init(allocator);
     defer idx_to_area_idx.deinit();
@@ -98,12 +101,12 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
                 // its the same area, just do the usual stuff
                 areas.items[area_left_idx].area += 1;
                 areas.items[area_left_idx].perimeter += perimeter_score;
-                try areas.items[area_left_idx].plots.append(idx);
+                try areas.items[area_left_idx].plots.append(.{ .idx = idx, .sides = perimeter_score });
                 try idx_to_area_idx.put(idx, area_left_idx);
             } else {
                 // merge left area with top area, remove left area
-                for (areas.items[area_left_idx].plots.items) |plot_idx| {
-                    try idx_to_area_idx.put(plot_idx, area_top_idx);
+                for (areas.items[area_left_idx].plots.items) |plot| {
+                    try idx_to_area_idx.put(plot.idx, area_top_idx);
                 }
                 areas.items[area_top_idx].area += areas.items[area_left_idx].area;
                 areas.items[area_top_idx].perimeter += areas.items[area_left_idx].perimeter;
@@ -112,10 +115,10 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
                 areas.items[area_left_idx].area = 0;
                 areas.items[area_left_idx].perimeter = 0;
                 areas.items[area_left_idx].plots.deinit();
-                // add current plot
+                // add current area
                 areas.items[area_top_idx].area += 1;
                 areas.items[area_top_idx].perimeter += perimeter_score;
-                try areas.items[area_top_idx].plots.append(idx);
+                try areas.items[area_top_idx].plots.append(.{ .idx = idx, .sides = perimeter_score });
                 try idx_to_area_idx.put(idx, area_top_idx);
             }
         } else if (area_top) {
@@ -123,18 +126,18 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
             const area_idx = idx_to_area_idx.get(top_idx) orelse unreachable;
             areas.items[area_idx].area += 1;
             areas.items[area_idx].perimeter += perimeter_score;
-            try areas.items[area_idx].plots.append(idx);
+            try areas.items[area_idx].plots.append(.{ .idx = idx, .sides = perimeter_score });
             try idx_to_area_idx.put(idx, area_idx);
         } else if (area_left) {
             const left_idx = idx - 1;
             const area_idx = idx_to_area_idx.get(left_idx) orelse unreachable;
             areas.items[area_idx].area += 1;
             areas.items[area_idx].perimeter += perimeter_score;
-            try areas.items[area_idx].plots.append(idx);
+            try areas.items[area_idx].plots.append(.{ .idx = idx, .sides = perimeter_score });
             try idx_to_area_idx.put(idx, area_idx);
         } else {
-            var plots = std.ArrayList(u64).init(allocator);
-            try plots.append(idx);
+            var plots = std.ArrayList(Plot).init(allocator);
+            try plots.append(.{ .idx = idx, .sides = perimeter_score });
             const area = Area{ .char = input[idx], .perimeter = perimeter_score, .area = 1, .plots = plots };
             try areas.append(area);
             try idx_to_area_idx.put(idx, areas.items.len - 1);
@@ -147,12 +150,21 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
             // area was merged and plots are deinitialized
             continue;
         }
-        fence_cost += area.area * area.perimeter;
-        //std.debug.print("char: {c}, area: {any}, perimeter: {any}, plots: {any}\n", .{ area.char, area.area, area.perimeter, area.plots.items });
+
+        std.mem.sort(Plot, area.plots.items, {}, plot_compare_idx);
+        // each area has at least four sides
+        const sides: u64 = 4;
+        //TODO somehow calculate sides
+        fence_cost += area.area * sides;
+        std.debug.print("char: {c}, area: {any}, sides: {any}, plots: {any}\n", .{ area.char, area.area, sides, area.plots.items });
         area.plots.deinit();
     }
 
     return fence_cost;
+}
+
+pub fn plot_compare_idx(_: void, a: Plot, b: Plot) bool {
+    return b.idx < a.idx;
 }
 
 pub fn row_col_to_input_idx(row_idx: u64, col_idx: u64, row_len: u64) u64 {
