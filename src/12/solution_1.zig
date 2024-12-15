@@ -61,6 +61,12 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
                 perimeter_score += 1;
             }
         }
+        if (row_idx + 1 < row_max) {
+            const bottom_idx = idx + col_max + 1;
+            if (input[bottom_idx] != char) {
+                perimeter_score += 1;
+            }
+        }
         if (col_idx > 0) {
             const left_idx = idx - 1;
             area_left = input[left_idx] == char;
@@ -71,12 +77,6 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
         if (col_idx + 1 < col_max) {
             const right_idx = idx + 1;
             if (input[right_idx] != char) {
-                perimeter_score += 1;
-            }
-        }
-        if (row_idx + 1 < row_max) {
-            const bottom_idx = idx + col_max + 1;
-            if (input[bottom_idx] != char) {
                 perimeter_score += 1;
             }
         }
@@ -148,7 +148,6 @@ pub fn garden_fence_cost(allocator: std.mem.Allocator, input: []const u8) !u64 {
             continue;
         }
         fence_cost += area.area * area.perimeter;
-        //std.debug.print("char: {c}, area: {any}, perimeter: {any}, plots: {any}\n", .{ area.char, area.area, area.perimeter, area.plots.items });
         area.plots.deinit();
     }
 

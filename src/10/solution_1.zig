@@ -55,8 +55,8 @@ pub fn trailhead_end_positions(input: []const u8, start_idx: u64, row_max: u64, 
     }
 
     const start_idx_col = start_idx % (col_max + 1);
-    if (start_idx >= row_max + 1) {
-        const top_idx = start_idx - row_max - 1;
+    if (start_idx >= col_max + 1) {
+        const top_idx = start_idx - col_max - 1;
         if (input[top_idx] == input[start_idx] + 1) {
             try trailhead_end_positions(input, top_idx, row_max, col_max, positions);
         }

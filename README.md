@@ -175,3 +175,18 @@ this case was not covered in the provided data
 - blinking function is now called recursively for each blinking step, if the result is already in the cache, return it
 - this was way faster than expected (15ms), very happy with this solution
 - just used one solution.zig file for both tasks & tests, the unoptimized version of task 1 is still in the git history
+
+
+## 12
+
+### Task 1
+- my initial approach worked pretty well, i was iterating over the one dimensional input and looking for an existing area of that
+char above and to the left
+- had to merge areas if a char has different areas with the same char above and to the left
+
+### Task 2
+- this was more tricky, i did the following for each area
+	- store fence sides of each plot
+	- group plots by row/col for all fence sides separately (top, left, right, bottom)
+	- calculate side count for each side type (top, left, right, bottom) by sorting the Plots by idx and checking if the idx is continous
+- overall happy with my solution, managed to find grid related bugs in a previous solution (day 10)

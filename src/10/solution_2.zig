@@ -51,8 +51,8 @@ pub fn trailhead_score(input: []const u8, start_idx: u64, row_max: u64, col_max:
 
     var score: u64 = 0;
     const start_idx_col = start_idx % (col_max + 1);
-    if (start_idx >= row_max + 1) {
-        const top_idx = start_idx - row_max - 1;
+    if (start_idx >= col_max + 1) {
+        const top_idx = start_idx - col_max - 1;
         if (input[top_idx] == input[start_idx] + 1) {
             score += try trailhead_score(input, top_idx, row_max, col_max);
         }
